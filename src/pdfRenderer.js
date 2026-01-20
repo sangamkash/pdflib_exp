@@ -114,7 +114,21 @@ async function renderElements(elements, pdfBuffer) {
     }
 
     const pdfDoc = await PDFDocument.load(pdfBuffer);
-    const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+
+    // Font mapping
+    const fontMap = {
+        'Helvetica': StandardFonts.Helvetica,
+        'HelveticaBold': StandardFonts.HelveticaBold,
+        'TimesRoman': StandardFonts.TimesRoman,
+        'Courier': StandardFonts.Courier,
+        'Symbol': StandardFonts.Symbol,
+        'ZapfDingbats': StandardFonts.ZapfDingbats
+        // Add others as needed
+    };
+
+    // Cache embedded fonts to avoid re-embedding
+    const embeddedFonts = {};
+
     const pages = pdfDoc.getPages();
     // Assuming single page modification or elements specify page. 
     // The requirement implies "create an output PDF", typically on the first page or existing pages.
@@ -138,10 +152,20 @@ async function renderElements(elements, pdfBuffer) {
 
         const rotation = degrees(element.rotation || 0);
         const scale = element.scale || 1;
+        const opacity = element.opacity !== undefined ? element.opacity : 1;
 
         if (element.type === 'text') {
             const fontSize = 12 * scale; // Base size 12
             const color = hexToRgb(element.color);
+
+            // Font selection
+            const fontName = element.font || 'Helvetica';
+            let font = embeddedFonts[fontName];
+            if (!font) {
+                const stdFont = fontMap[fontName] || StandardFonts.Helvetica;
+                font = await pdfDoc.embedFont(stdFont);
+                embeddedFonts[fontName] = font;
+            }
 
             // Adjust Y for text to be somewhat top-aligned if inputY was top.
             // drawText draws at baseline. To make inputY the "top", we subtract roughly the font height/ascender.
@@ -165,6 +189,7 @@ async function renderElements(elements, pdfBuffer) {
                 font: font,
                 color: color,
                 rotate: rotation,
+                opacity: opacity,
             });
         } else if (element.type === 'image') {
             try {
@@ -203,6 +228,7 @@ async function renderElements(elements, pdfBuffer) {
                     width: imgDims.width,
                     height: imgDims.height,
                     rotate: rotation,
+                    opacity: opacity,
                 });
             } catch (err) {
                 console.error(`Failed to load/render image ${element.id}: ${err.message}`);

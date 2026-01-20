@@ -13,6 +13,7 @@ const elementsData = [
         "outlineColor": "#000000",
         "rotation": 15,
         "scale": 1.5,
+        "font": "HelveticaBold",
         "position": {
             "x": 120,
             "y": 80
@@ -24,6 +25,7 @@ const elementsData = [
         "src": "https://raw.githubusercontent.com/sangamkash/PortfolioData/refs/heads/main/hike_logo.png",//"https://dummyimage.com/150x150/000/fff.png&text=Logo",
         "rotation": 0,
         "scale": 1,
+        "opacity": 0.5,
         "position": {
             "x": 300,
             "y": 200
@@ -36,6 +38,8 @@ const elementsData = [
         "color": "#FFCC00",
         "rotation": 0,
         "scale": 1.9,
+        "font": "TimesRoman",
+        "opacity": 0.8,
         "position": {
             "x": 140,
             "y": 360
@@ -49,6 +53,7 @@ const elementsData = [
         "outlineColor": "#000CF7",
         "rotation": 0,
         "scale": 3,
+        "font": "Courier",
         "position": {
             "x": 140,
             "y": 460
@@ -62,6 +67,7 @@ const elementsData = [
         "outlineColor": "#000CF7",
         "rotation": 0,
         "scale": 2.8,
+        "font": "HelveticaOblique",
         "position": {
             "x": 145,
             "y": 460
@@ -73,6 +79,7 @@ const elementsData = [
         "src": "https://dummyimage.com/100x100/ffcc00/000.png&text=Coin",
         "rotation": 45,
         "scale": 1.5,
+        "opacity": 0.3,
         "position": {
             "x": 450,
             "y": 180
