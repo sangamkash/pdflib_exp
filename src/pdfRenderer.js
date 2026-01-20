@@ -1,4 +1,4 @@
-const { PDFDocument, rgb, StandardFonts, degrees } = require('pdf-lib');
+const { PDFDocument, rgb, StandardFonts, degrees, PDFOperator, PDFNumber } = require('pdf-lib');
 const fontkit = require('@pdf-lib/fontkit');
 const fs = require('fs');
 const axios = require('axios');
@@ -204,15 +204,66 @@ async function renderElements(elements, pdfBuffer) {
                 console.warn(`Warning: Some characters in text "${element.content}" were stripped because they are not supported by the standard font.`);
             }
 
-            page.drawText(sanitizedContent, {
-                x: x,
-                y: drawY,
-                size: fontSize,
-                font: font,
-                color: color,
-                rotate: rotation,
-                opacity: opacity,
-            });
+            // Check for outline
+            if (element.outlineColor || element.outlineWidth) {
+                const { PDFOperator, PDFNumber, setStrokeColor } = require('pdf-lib'); // Import locally if not at top, or move to top. 
+                // However, setStrokeColor is a function that returns op? No, it's typically page.setStrokeColor which appends op.
+                // We need raw operators to bracket the drawText or use page methods.
+                // Using page methods is cleaner if they don't reset.
+
+                // Save graphics state
+                page.pushOperators(PDFOperator.of('q', []));
+
+                // Set Rendering Mode to Fill and Stroke (2) or Stroke (1) if no color? 
+                // Assuming we always fill as well (FillAndOutline).
+                page.pushOperators(PDFOperator.of('Tr', [PDFNumber.of(2)]));
+
+                // Set Outline Width
+                if (element.outlineWidth) {
+                    page.pushOperators(PDFOperator.of('w', [PDFNumber.of(element.outlineWidth)]));
+                }
+
+                // Set Outline Color
+                if (element.outlineColor) {
+                    const outlineRgb = hexToRgb(element.outlineColor);
+                    // pdf-lib page.drawText usually handles fill color. We need to set Stroke color.
+                    // We can use page.setStrokeColor() BUT it might append to end? 
+                    // No, page.setStrokeColor calls executeOperator.
+                    page.drawText(' ', { color: outlineRgb }); // Hack to get color? No.
+                    // We simply push the color operator.
+                    // SC (stroke color for non-stroking? No, SCN/scn or RG/rg or K/k)
+                    // pdf-lib's setStrokeColor uses 'RG' for RGB.
+                    page.pushOperators(PDFOperator.of('RG', [
+                        PDFNumber.of(outlineRgb.red),
+                        PDFNumber.of(outlineRgb.green),
+                        PDFNumber.of(outlineRgb.blue),
+                    ]));
+                }
+
+                page.drawText(sanitizedContent, {
+                    x: x,
+                    y: drawY,
+                    size: fontSize,
+                    font: font,
+                    color: color,
+                    rotate: rotation,
+                    opacity: opacity,
+                });
+
+                // Restore graphics state
+                page.pushOperators(PDFOperator.of('Q', []));
+
+            } else {
+                page.drawText(sanitizedContent, {
+                    x: x,
+                    y: drawY,
+                    size: fontSize,
+                    font: font,
+                    color: color,
+                    rotate: rotation,
+                    opacity: opacity,
+                });
+            }
         } else if (element.type === 'image') {
             try {
                 const response = await axios({

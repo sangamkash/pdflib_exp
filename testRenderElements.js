@@ -10,7 +10,6 @@ const elementsData = [
         "id": "txt_001",
         "content": "Abc!",
         "color": "#0000FF", // Changed to Blue for visibility on white
-        "outlineColor": "#000000",
         "rotation": 15,
         "scale": 1.5,
         "font": "HelveticaBold",
@@ -34,8 +33,7 @@ const elementsData = [
     {
         "type": "text",
         "id": "txt_002",
-        "content": "Win real rewards 🎁",
-        "color": "#FFCC00",
+        "content": "Win real (🎁🎁) rewards",
         "rotation": 0,
         "scale": 1.9,
         "font": "TimesRoman",
@@ -70,7 +68,7 @@ const elementsData = [
         "font": "HelveticaOblique",
         "position": {
             "x": 145,
-            "y": 460
+            "y": 560
         }
     },
     {
@@ -78,7 +76,6 @@ const elementsData = [
         "id": "txt_004",
         "content": "This a custom font",
         "color": "#F700DE",
-        "outlineColor": "#000CF7",
         "rotation": 0,
         "scale": 2.8,
         "font": "https://raw.githubusercontent.com/google/fonts/main/ofl/rubikstorm/RubikStorm-Regular.ttf",
