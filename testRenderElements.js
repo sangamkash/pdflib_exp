@@ -74,6 +74,20 @@ const elementsData = [
         }
     },
     {
+        "type": "text",
+        "id": "txt_004",
+        "content": "This a custom font",
+        "color": "#F700DE",
+        "outlineColor": "#000CF7",
+        "rotation": 0,
+        "scale": 2.8,
+        "font": "https://raw.githubusercontent.com/google/fonts/main/ofl/rubikstorm/RubikStorm-Regular.ttf",
+        "position": {
+            "x": 145,
+            "y": 660
+        }
+    },
+    {
         "type": "image",
         "id": "img_002",
         "src": "https://dummyimage.com/100x100/ffcc00/000.png&text=Coin",
