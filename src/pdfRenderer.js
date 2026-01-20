@@ -1,4 +1,5 @@
 const { PDFDocument, rgb, StandardFonts, degrees } = require('pdf-lib');
+const fontkit = require('@pdf-lib/fontkit');
 const fs = require('fs');
 const axios = require('axios');
 
@@ -161,10 +162,31 @@ async function renderElements(elements, pdfBuffer) {
             // Font selection
             const fontName = element.font || 'Helvetica';
             let font = embeddedFonts[fontName];
+
             if (!font) {
-                const stdFont = fontMap[fontName] || StandardFonts.Helvetica;
-                font = await pdfDoc.embedFont(stdFont);
-                embeddedFonts[fontName] = font;
+                // Check if it's a URL
+                if (fontName.startsWith('http://') || fontName.startsWith('https://')) {
+                    try {
+                        console.log(`Downloading custom font from ${fontName}...`);
+                        const fontResponse = await axios({
+                            url: fontName,
+                            method: 'GET',
+                            responseType: 'arraybuffer'
+                        });
+                        const fontBytes = fontResponse.data;
+                        pdfDoc.registerFontkit(fontkit);
+                        font = await pdfDoc.embedFont(fontBytes);
+                        embeddedFonts[fontName] = font;
+                    } catch (err) {
+                        console.error(`Failed to load custom font ${fontName}: ${err.message}`);
+                        // Fallback to Helvetica
+                        font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+                    }
+                } else {
+                    const stdFont = fontMap[fontName] || StandardFonts.Helvetica;
+                    font = await pdfDoc.embedFont(stdFont);
+                    embeddedFonts[fontName] = font;
+                }
             }
 
             // Adjust Y for text to be somewhat top-aligned if inputY was top.
@@ -232,6 +254,48 @@ async function renderElements(elements, pdfBuffer) {
                 });
             } catch (err) {
                 console.error(`Failed to load/render image ${element.id}: ${err.message}`);
+            }
+        } else if (element.type === 'base64image') {
+            try {
+                const dataUri = element.src;
+                const matches = dataUri.match(/^data:(.+);base64,(.+)$/);
+
+                if (!matches || matches.length !== 3) {
+                    throw new Error('Invalid base64 string format');
+                }
+
+                const contentType = matches[1];
+                const b64Data = matches[2];
+                const imageBytes = Buffer.from(b64Data, 'base64');
+
+                let embeddedImage;
+                if (contentType === 'image/png') {
+                    embeddedImage = await pdfDoc.embedPng(imageBytes);
+                } else if (contentType === 'image/jpeg' || contentType === 'image/jpg') {
+                    embeddedImage = await pdfDoc.embedJpg(imageBytes);
+                } else {
+                    // Fallback try PNG then JPG if content type isn't explicit standard
+                    try {
+                        embeddedImage = await pdfDoc.embedPng(imageBytes);
+                    } catch (e) {
+                        embeddedImage = await pdfDoc.embedJpg(imageBytes);
+                    }
+                }
+
+                const imgDims = embeddedImage.scale(scale);
+                const drawY = y - imgDims.height;
+
+                page.drawImage(embeddedImage, {
+                    x: x,
+                    y: drawY,
+                    width: imgDims.width,
+                    height: imgDims.height,
+                    rotate: rotation,
+                    opacity: opacity,
+                });
+
+            } catch (err) {
+                console.error(`Failed to load/render base64image ${element.id}: ${err.message}`);
             }
         }
     }
