@@ -1,0 +1,171 @@
+{
+    "success": true,
+    "data": {
+        "id": 12345,
+        "uuid": "550e8400-e29b-41d4-a716-446655440000",
+        "user_id": 101,
+        "organization_id": 1,
+        "app_id": 1,
+        "name": "Sample Document.pdf",
+        "s3_key": "documents/1/Sample_Document.pdf",
+        "presigned_url": "https://innoscripta-document-management-testing.s3.eu-central-1.amazonaws.com/4fdba072-386b-4449-8bc2-e8e858c40534?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Checksum-Mode=ENABLED&X-Amz-Credential=AKIA5H45ILD3EZNES7EO%2F20260113%2Feu-central-1%2Fs3%2Faws4_request&X-Amz-Date=20260113T094952Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&x-id=GetObject&X-Amz-Signature=ecdf53c5f2b7d1960c919ab05ed8267c0eef838dcc69a560e10c7161bfa45a1d",
+        "document_status": "DRAFT",
+        "created_at": "2023-10-27 10:00:00 +0000 UTC",
+        "updated_at": "2023-10-27 10:05:00 +0000 UTC",
+        "recipients": [
+            {
+                "id": 1,
+                "user_id": 201,
+                "recipient_role": "SIGNER",
+                "recipient_status": "PENDING",
+                "order_number": 1,
+                "is_optional_assignment": false
+            },
+            {
+                "id": 2,
+                "user_id": 202,
+                "recipient_role": "VIEWER",
+                "recipient_status": "completed",
+                "order_number": 2,
+                "is_optional_assignment": true
+            }
+        ],
+        "fields": [
+            {
+                "id": 1001,
+                "field_type": "TEXT",
+                "page": 1,
+                "rect_x": 100.5,
+                "rect_y": 200.0,
+                "rect_width": 150.0,
+                "rect_height": 30.0,
+                "is_required": true,
+                "placeholder": "Enter your name",
+                "default_value": null,
+                "tooltip": "Full Name",
+                "provider_field_id": "text_001",
+                "appearance": {
+                    "font": "Arial",
+                    "size": 12
+                },
+                "recipients": [
+                    1
+                ]
+            },
+            {
+                "id": 1002,
+                "field_type": "DATETIME",
+                "page": 1,
+                "rect_x": 100.5,
+                "rect_y": 250.0,
+                "rect_width": 150.0,
+                "rect_height": 30.0,
+                "is_required": true,
+                "placeholder": "Select date",
+                "default_value": "2023-10-27",
+                "tooltip": "Sign Date",
+                "provider_field_id": "date_001",
+                "appearance": {
+                    "format": "YYYY-MM-DD"
+                },
+                "recipients": [
+                    1
+                ]
+            },
+            {
+                "id": 1003,
+                "field_type": "EMAIL",
+                "page": 1,
+                "rect_x": 100.5,
+                "rect_y": 300.0,
+                "rect_width": 200.0,
+                "rect_height": 30.0,
+                "is_required": false,
+                "placeholder": "email@example.com",
+                "default_value": null,
+                "tooltip": "Email Address",
+                "provider_field_id": "email_001",
+                "appearance": null,
+                "recipients": [
+                    1
+                ]
+            },
+            {
+                "id": 1004,
+                "field_type": "NAME",
+                "page": 1,
+                "rect_x": 550,
+                "rect_y": 0,
+                "rect_width": 150.0,
+                "rect_height": 30.0,
+                "is_required": true,
+                "placeholder": "Name",
+                "default_value": "John Doe abc",
+                "tooltip": "Printed Name",
+                "provider_field_id": "name_001",
+                "appearance": null,
+                "recipients": [
+                    1
+                ]
+            },
+            {
+                "id": 1005,
+                "field_type": "SIGNATURE",
+                "page": 2,
+                "rect_x": 250.0,
+                "rect_y": 500.0,
+                "rect_width": 10.0,
+                "rect_height": 10.0,
+                "is_required": true,
+                "placeholder": "Sign Here",
+                "default_value": null,
+                "tooltip": "Signature",
+                "provider_field_id": "sig_001",
+                "appearance": {
+                    "color": "black"
+                },
+                "recipients": [
+                    1
+                ]
+            },
+            {
+                "id": 1006,
+                "field_type": "RADIO",
+                "page": 2,
+                "rect_x": 100.0,
+                "rect_y": 600.0,
+                "rect_width": 20.0,
+                "rect_height": 20.0,
+                "is_required": true,
+                "placeholder": null,
+                "default_value": null,
+                "tooltip": "Choose option",
+                "provider_field_id": "radio_001",
+                "appearance": {
+                    "group_name": "agreement_terms"
+                },
+                "recipients": [
+                    1
+                ]
+            },
+            {
+                "id": 1007,
+                "field_type": "CHECKBOX",
+                "page": 2,
+                "rect_x": 100.0,
+                "rect_y": 650.0,
+                "rect_width": 20.0,
+                "rect_height": 20.0,
+                "is_required": false,
+                "placeholder": null,
+                "default_value": "false",
+                "tooltip": "I agree",
+                "provider_field_id": "check_001",
+                "appearance": null,
+                "recipients": [
+                    1
+                ]
+            }
+        ]
+    }
+}
