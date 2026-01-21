@@ -129,6 +129,8 @@ async function renderElements(elements, pdfBuffer) {
 
     // Cache embedded fonts to avoid re-embedding
     const embeddedFonts = {};
+    const failedFonts = new Set();
+
 
     const pages = pdfDoc.getPages();
     // Assuming single page modification or elements specify page. 
@@ -181,6 +183,8 @@ async function renderElements(elements, pdfBuffer) {
                         console.error(`Failed to load custom font ${fontName}: ${err.message}`);
                         // Fallback to Helvetica
                         font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+                        failedFonts.add(fontName);
+                        embeddedFonts[fontName] = font;
                     }
                 } else {
                     const stdFont = fontMap[fontName] || StandardFonts.Helvetica;
@@ -198,10 +202,34 @@ async function renderElements(elements, pdfBuffer) {
             const drawY = y - fontSize;
 
             // StandardFonts only support WinAnsi (approx Latin-1). 
-            // We need to strip or replace unsupported characters (like emojis) to prevent crash.
-            const sanitizedContent = element.content.replace(/[^\x00-\xFF]/g, '');
-            if (sanitizedContent !== element.content) {
-                console.warn(`Warning: Some characters in text "${element.content}" were stripped because they are not supported by the standard font.`);
+            // We need to strip or replace unsupported characters for standard fonts.
+            // Custom fonts (embedded via fontkit) handle Unicode mapping.
+            let sanitizedContent = element.content;
+
+            // Check if we are using a standard font
+            const isStandardFont = fontMap[fontName] || !embeddedFonts[fontName] || !embeddedFonts[fontName].embedder;
+            // Note: embeddedFonts[fontName] stores the embedded font object. 
+            // pdf-lib's PDFFont doesn't easily expose if it's standard or embedded custom type directly in a flag,
+            // but we can infer from our loading logic: if it came from StandardFonts list, it's standard.
+            // However, our code structure:
+            // if (url) -> custom (embeddedFonts[fontName] = font)
+            // else -> standard (embeddedFonts[fontName] = font)
+            // So we need to tracking if it was a custom font loaded from URL.
+
+            // Re-evaluating: 'font' variable holds the PDFFont instance.
+            // We can check if `fontName` was in `fontMap` (keys are standard names) AND strictly met that path.
+            // Or simpler: changing the logic above to flag 'isCustomFont'.
+
+            let isCustomFont = false;
+            if ((fontName.startsWith('http://') || fontName.startsWith('https://')) && !failedFonts.has(fontName)) {
+                isCustomFont = true;
+            }
+
+            if (!isCustomFont) {
+                sanitizedContent = element.content.replace(/[^\x00-\xFF]/g, '');
+                if (sanitizedContent !== element.content) {
+                    console.warn(`Warning: Some characters in text "${element.content}" were stripped because they are not supported by the standard font "${fontName}".`);
+                }
             }
 
             // Check for outline

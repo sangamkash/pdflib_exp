@@ -8,7 +8,7 @@ const elementsData = [
     {
         "type": "text",
         "id": "txt_001",
-        "content": "Abc!",
+        "content": "Abc!Wie geht es dir 你好吗!",
         "color": "#0000FF", // Changed to Blue for visibility on white
         "rotation": 15,
         "scale": 1.5,
@@ -82,6 +82,19 @@ const elementsData = [
         "position": {
             "x": 145,
             "y": 660
+        }
+    },
+    {
+        "type": "text",
+        "id": "txt_005",
+        "content": "Testing language support 你好吗 chinese using custum chinese font",
+        "color": "#0890BE",
+        "rotation": 0,
+        "scale":1,
+        "font": "https://raw.githubusercontent.com/google/fonts/main/ofl/zcoolkuaile/ZCOOLKuaiLe-Regular.ttf",
+        "position": {
+            "x": 145,
+            "y": 760
         }
     },
     {
